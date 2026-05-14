@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VibeOps
+
+**AI-Powered Operations Automation Studio**
+
+Describe your messy business processes in plain English. VibeOps turns your "vibe" into structured, executable automation workflows — powered by Groq's Llama 3.3 70B. Built for real small businesses, consultants, and professionals who want to work smarter, not harder.
+
+<p align="center">
+  <strong>Vibe → AI → Automated Workflow</strong>
+</p>
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 16 (App Router + Turbopack) |
+| **Language** | TypeScript (strict mode) |
+| **Styling** | Tailwind CSS v4 — Dark slate minimal theme |
+| **Database** | LibSQL (Turso-compatible) via `@libsql/client` |
+| **ORM** | Drizzle ORM — type-safe, parameterized queries |
+| **Auth** | Lucia v3 — session-based auth with argon2 password hashing |
+| **AI** | Groq API — `llama-3.3-70b-versatile` via OpenAI-compatible SDK |
+| **Validation** | Server-side only — never trusts client input |
+
+---
+
+## Key Features
+
+- **Vibe-to-Workflow Engine** — Describe any manual process in plain English, AI generates a structured automation plan with triggers, actions, tools, and frequency
+- **Two-Panel Builder** — Write your vibe on the left, see the generated automation on the right in real time
+- **Test Run Simulation** — Step-by-step execution simulation with live progress tracking and terminal-style logs
+- **Save & Export** — Store up to 3 automations, export as text reports
+- **Dark Minimal UI** — Professional slate theme, fully responsive (mobile-first)
+- **Secure by Design** — Lucia auth, server-side authorization, rate limiting, input sanitization, IDOR protection
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Clone and install
+git clone <repo-url>
+cd vibeops
+npm install
+
+# Set up environment
+cp .env.local.example .env.local
+# Add your GROQ_API_KEY to .env.local
+
+# Initialize the database
+npm run db:generate
+npm run db:push
+
+# Start developing
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+vibeops/
+├── app/
+│   ├── (auth)/                  # Sign in / Sign up
+│   ├── (protected)/dashboard/   # Dashboard, Create, Automations, Examples, Settings
+│   └── api/generate/            # Groq AI generation endpoint
+├── components/
+│   ├── ui/                      # Button, Input primitives
+│   ├── create-automation.tsx    # Two-panel builder
+│   ├── preview-panel.tsx        # Generated workflow preview + test run
+│   ├── automation-card.tsx      # Saved automation card with delete
+│   └── footer.tsx               # Shared footer credit
+├── lib/
+│   ├── db/                      # Drizzle schema + connection
+│   ├── groq.ts                  # Groq AI client + system prompt
+│   ├── auth.ts                  # Lucia v3 session management
+│   ├── auth-actions.ts          # Sign up / sign in / sign out
+│   ├── automation-actions.ts    # Save / delete with ownership checks
+│   └── rate-limit.ts            # In-memory rate limiter
+└── drizzle/                     # SQL migration files
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Auth**: Lucia v3 with argon2 password hashing, `sameSite: "lax"`, secure-only cookies in production
+- **Authorization**: Every DB operation verifies `userId` ownership — no IDORs
+- **Rate Limiting**: AI generation endpoint capped at 5 requests/minute per user
+- **Input Sanitization**: All user input trimmed and length-capped server-side, type-checked before use
+- **Parameterized Queries**: Drizzle ORM prevents SQL injection
+- **No Client Trust**: All validation, auth checks, and ownership verification happen server-side only
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<p align="center">
+  Built by <a href="https://buildveloper.com"><strong>Christopher John</strong></a><br>
+  <em>AI-Native Fullstack & Automation Engineer</em><br>
+  <a href="https://x.com/shigusna">@shigusna</a>
+</p>
