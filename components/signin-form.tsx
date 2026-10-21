@@ -1,25 +1,20 @@
 "use client";
 
 import { useActionState } from "react";
-import { CircleAlert, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-actions";
 import { Button } from "@/components/ui/button";
+import { Alert } from "@/components/ui/alert";
 import { Input, Label } from "@/components/ui/input";
 
-export function SignInForm() {
+export function SignInForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState(signIn, {});
 
   return (
     <form action={action} className="space-y-5">
-      {state?.error && (
-        <p
-          role="alert"
-          className="flex items-start gap-2 border border-danger/30 bg-danger-wash px-3.5 py-3 text-[13px] leading-relaxed text-danger"
-        >
-          <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          {state.error}
-        </p>
-      )}
+      {next && <input type="hidden" name="next" value={next} />}
+
+      {state?.error && <Alert tone="danger">{state.error}</Alert>}
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>

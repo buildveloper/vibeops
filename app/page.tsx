@@ -12,7 +12,9 @@ import { PlanSpecimen } from "@/components/marketing/plan-specimen";
 import { Faq } from "@/components/marketing/faq";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { getSession } from "@/lib/auth";
 import { FIELD_NOTES, FIELD_NOTE_CATEGORIES, FEATURED_NOTE } from "@/lib/examples";
+import { buildCreateHref } from "@/lib/utils";
 
 const COSTS = [
   {
@@ -40,13 +42,13 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "Get a real plan",
-    body: "VibeOps maps the brief into a step-by-step plan with a trigger, action, tool, and frequency for every step.",
+    title: "Get a real automation",
+    body: "VibeOps maps your description into a step-by-step automation with a trigger, action, tool, and frequency for every step.",
   },
   {
     number: "03",
     title: "Keep it and hand it off",
-    body: "Save the plan to your library, export it, or use it as the setup brief for the tools you already run.",
+    body: "Save the automation to your account, export it, or use it as the setup guide for the tools you already run.",
   },
 ];
 
@@ -56,19 +58,33 @@ const PRINCIPLES = [
     body: "No flowcharts, no setup calls, no new vocabulary.",
   },
   {
-    title: "A real plan out",
+    title: "A real automation out",
     body: "Triggers, actions, tools, frequency. A document you can hand to anyone.",
   },
   {
     title: "Your tools, your data",
-    body: "Keep the stack you already run. Export the plan whenever you want.",
+    body: "Keep the stack you already run. Export the automation whenever you want.",
   },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { user } = (await getSession()) ?? {};
+  const signedIn = Boolean(user);
+
+  function templateHref(note: (typeof FIELD_NOTES)[number]) {
+    const createHref = buildCreateHref(note);
+    return signedIn
+      ? createHref
+      : `/signup?next=${encodeURIComponent(createHref)}`;
+  }
+
+  const browseTemplatesHref = signedIn
+    ? "/dashboard/examples"
+    : `/signup?next=${encodeURIComponent("/dashboard/examples")}`;
+
   return (
     <div className="grain-overlay min-h-screen bg-paper text-ink">
-      <SiteHeader />
+      <SiteHeader signedIn={signedIn} />
 
       <main id="main">
         <section className="border-b border-line">
@@ -102,8 +118,13 @@ export default function LandingPage() {
                 className="animate-rise mt-9 flex flex-col gap-3 sm:flex-row"
                 style={{ animationDelay: "180ms" }}
               >
-                <ButtonLink href="/signup" size="lg">
-                  Start with three free automations
+                <ButtonLink
+                  href={signedIn ? "/dashboard" : "/signup"}
+                  size="lg"
+                >
+                  {signedIn
+                    ? "Open your automations"
+                    : "Start with three free automations"}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </ButtonLink>
                 <ButtonLink href="#how-it-works" variant="secondary" size="lg">
@@ -115,7 +136,7 @@ export default function LandingPage() {
                 className="animate-rise mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.1em] text-muted"
                 style={{ animationDelay: "240ms" }}
               >
-                <span>Three plans free</span>
+                <span>Three automations free</span>
                 <span className="text-line-strong" aria-hidden="true">
                   /
                 </span>
@@ -133,14 +154,14 @@ export default function LandingPage() {
             >
               <div className="mb-4 flex items-center justify-between gap-4">
                 <p className="label-mono text-muted">
-                  A real plan from a 31-word brief
+                  A real automation from a 31-word description
                 </p>
                 <ArrowUpRight
                   className="h-4 w-4 text-muted"
                   aria-hidden="true"
                 />
               </div>
-              <PlanSpecimen />
+              <PlanSpecimen openHref={templateHref(FEATURED_NOTE)} />
               <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
                 Generated in one pass / Reviewed before saving
               </p>
@@ -237,7 +258,7 @@ export default function LandingPage() {
                     {index === 0 && (
                       <div className="mt-5 max-w-xl border-l-2 border-rust bg-paper p-4">
                         <p className="label-mono text-muted">
-                          What the brief sounds like
+                          What the description sounds like
                         </p>
                         <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
                           &ldquo;{FEATURED_NOTE.vibe}&rdquo;
@@ -252,7 +273,7 @@ export default function LandingPage() {
                       <div className="mt-5 max-w-xl border border-line bg-paper">
                         <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
                           <span className="label-mono text-muted">
-                            Plan / 4 steps
+                            Automation / 4 steps
                           </span>
                           <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-pine">
                             Structured
@@ -320,29 +341,29 @@ export default function LandingPage() {
         </section>
 
         <section
-          id="field-notes"
+          id="templates"
           className="scroll-mt-24 border-b border-line"
         >
           <div className="mx-auto max-w-[1280px] px-5 py-20 sm:px-8 sm:py-24 lg:py-28">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="label-mono text-rust-deep">Field notes</p>
+                <p className="label-mono text-rust-deep">Templates</p>
                 <h2 className="mt-4 max-w-xl font-display text-[clamp(2.25rem,4vw,3.5rem)] leading-[1.02] tracking-[-0.03em] text-ink">
-                  Four businesses. Four recurring headaches.
+                  Start from a real process.
                 </h2>
               </div>
               <Link
-                href="/signup"
+                href={browseTemplatesHref}
                 className="group inline-flex items-center gap-2 text-[13px] font-medium text-ink transition-colors hover:text-rust-deep"
               >
-                Open the full library
+                Browse all templates
                 <ArrowUpRight className="hover-arrow h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
 
             <div className="mt-10">
               <div className="hidden border-b border-line pb-3 md:grid md:grid-cols-[0.8fr_1.5fr_1.5fr_0.8fr] md:gap-8">
-                {["Business", "The recurring problem", "The plan", "Time returned"].map(
+                {["Business", "The recurring problem", "The automation", "Time returned"].map(
                   (label) => (
                     <span key={label} className="label-mono text-muted">
                       {label}
@@ -371,10 +392,10 @@ export default function LandingPage() {
                   <div>
                     <p className="font-mono text-[12px] text-ink">{note.time}</p>
                     <Link
-                      href="/signup"
+                      href={templateHref(note)}
                       className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-rust-deep transition-colors hover:text-ink"
                     >
-                      Use this brief
+                      Use this template
                       <ArrowRight className="hover-arrow h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                   </div>
@@ -398,7 +419,7 @@ export default function LandingPage() {
               <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-muted-on-ink">
                 VibeOps is built for the owner who is also the operations
                 manager, the scheduler, and the person who remembers the
-                follow-up. The plan should fit on one page and make sense on the
+                follow-up. The automation should fit on one page and make sense on the
                 first read.
               </p>
               <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-on-ink">
@@ -451,12 +472,16 @@ export default function LandingPage() {
                 Bring us the mess.
               </h2>
               <p className="mt-6 max-w-lg text-[16px] leading-relaxed text-paper/80">
-                Three plans free. Export them. No card. Describe the work the
-                way you would describe it to someone new.
+                Three automations free. Export them. No card. Describe the work
+                the way you would describe it to someone new.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="/signup" variant="paper" size="lg">
-                  Start with a brief
+                <ButtonLink
+                  href={signedIn ? "/dashboard" : "/signup"}
+                  variant="paper"
+                  size="lg"
+                >
+                  {signedIn ? "Open your automations" : "Start free"}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </ButtonLink>
                 <ButtonLink
@@ -498,7 +523,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter signedIn={signedIn} />
     </div>
   );
 }

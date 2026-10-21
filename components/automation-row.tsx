@@ -1,19 +1,17 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { GeneratedAutomation } from "@/lib/groq";
-import { Badge } from "@/components/ui/badge";
 import { DeletePlanButton } from "@/components/confirm-dialog";
 import { cn, formatDate, formatMonthDay } from "@/lib/utils";
 
 export const AUTOMATION_GRID =
-  "lg:grid lg:grid-cols-[28px_minmax(0,1.7fr)_minmax(0,0.8fr)_48px_112px_96px_80px_40px] lg:items-center lg:gap-4";
+  "lg:grid lg:grid-cols-[28px_minmax(0,1.7fr)_minmax(0,0.8fr)_48px_112px_96px_40px] lg:items-center lg:gap-4";
 
 export function AutomationRow({
   id,
   title,
   businessType,
   goal,
-  status,
   createdAt,
   plan,
   index,
@@ -23,15 +21,11 @@ export function AutomationRow({
   title: string;
   businessType: string;
   goal: string;
-  status: string;
   createdAt: Date;
   plan: GeneratedAutomation | null;
   index: number;
   className?: string;
 }) {
-  const label =
-    status === "saved" ? "Saved" : status === "draft" ? "Draft" : status;
-
   return (
     <div
       className={cn(
@@ -39,7 +33,12 @@ export function AutomationRow({
         className,
       )}
     >
-      <div className={cn("flex flex-col gap-3 py-4 lg:gap-4 lg:py-3", AUTOMATION_GRID)}>
+      <div
+        className={cn(
+          "flex flex-col gap-3 py-4 lg:gap-4 lg:py-3",
+          AUTOMATION_GRID,
+        )}
+      >
         <span className="hidden font-mono text-[10px] text-muted lg:block">
           {String(index + 1).padStart(2, "0")}
         </span>
@@ -80,14 +79,7 @@ export function AutomationRow({
           {formatMonthDay(createdAt)}
         </p>
 
-        <div className="hidden lg:block">
-          <Badge tone={status === "saved" ? "pine" : "neutral"}>{label}</Badge>
-        </div>
-
         <div className="flex items-center justify-end gap-1">
-          <div className="mr-auto lg:hidden">
-            <Badge tone={status === "saved" ? "pine" : "neutral"}>{label}</Badge>
-          </div>
           <DeletePlanButton id={id} title={title} className="relative z-10" />
           <ChevronRight
             className="h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-ink"

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | VibeOps",
   },
   description:
-    "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
+    "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation for the tools you already use.",
   applicationName: "VibeOps",
   authors: [{ name: "VibeOps" }],
   creator: "Christopher John",
@@ -47,13 +47,13 @@ export const metadata: Metadata = {
     siteName: "VibeOps",
     title: "VibeOps | Operations automation for small business",
     description:
-      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
+      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation for the tools you already use.",
   },
   twitter: {
     card: "summary_large_image",
     title: "VibeOps | Operations automation for small business",
     description:
-      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
+      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation for the tools you already use.",
   },
   robots: {
     index: true,

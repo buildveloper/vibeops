@@ -22,15 +22,15 @@ export default function NotFound() {
         <div className="mx-auto w-full max-w-[1280px]">
           <p className="label-mono text-rust-deep">404 / Page not found</p>
           <h1 className="mt-4 max-w-2xl font-display text-[clamp(3rem,8vw,6rem)] leading-[0.92] tracking-[-0.04em] text-ink">
-            This page is not on the board.
+            We couldn&apos;t find that page.
           </h1>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted">
-            The link may be old, or the plan may have been deleted. Start from
-            the operations desk.
+            The link may be old, or the automation may have been deleted. Go
+            back to your automations to keep working.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/dashboard" size="md">
-              Open operations desk
+              Go to your automations
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </ButtonLink>
             <ButtonLink href="/" variant="secondary" size="md">
@@ -43,7 +43,7 @@ export default function NotFound() {
       <footer className="border-t border-line px-5 py-5 sm:px-8">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4">
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
-            VibeOps / Operations automation
+            VibeOps / Automation planning
           </p>
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
             &copy; 2026

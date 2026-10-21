@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { hash, verify } from "argon2";
 import { generateId } from "lucia";
+import { safeNextPath } from "@/lib/utils";
 
 export async function signUp(
   prevState: { error?: string },
@@ -16,6 +17,7 @@ export async function signUp(
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
+  const next = safeNextPath(formData.get("next"));
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -55,7 +57,7 @@ export async function signUp(
     sessionCookie.attributes,
   );
 
-  redirect("/dashboard");
+  redirect(next ?? "/dashboard");
 }
 
 export async function signIn(
@@ -64,6 +66,7 @@ export async function signIn(
 ): Promise<{ error?: string }> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const next = safeNextPath(formData.get("next"));
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -94,7 +97,7 @@ export async function signIn(
     sessionCookie.attributes,
   );
 
-  redirect("/dashboard");
+  redirect(next ?? "/dashboard");
 }
 
 export async function signOut() {

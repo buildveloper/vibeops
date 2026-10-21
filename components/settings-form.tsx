@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { CircleAlert, CircleCheck, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { updateName } from "@/lib/settings-actions";
 import { Button } from "@/components/ui/button";
+import { Alert } from "@/components/ui/alert";
 import { FieldMessage, Input, Label } from "@/components/ui/input";
 
 export function SettingsForm({ initialName }: { initialName: string }) {
@@ -11,25 +12,9 @@ export function SettingsForm({ initialName }: { initialName: string }) {
 
   return (
     <form action={action} className="mt-5 space-y-4">
-      {state?.error && (
-        <p
-          role="alert"
-          className="flex items-start gap-2 border border-danger/30 bg-danger-wash px-3.5 py-3 text-[13px] leading-relaxed text-danger"
-        >
-          <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          {state.error}
-        </p>
-      )}
+      {state?.error && <Alert tone="danger">{state.error}</Alert>}
 
-      {state?.success && (
-        <p
-          role="status"
-          className="flex items-start gap-2 border border-pine/25 bg-pine-wash px-3.5 py-3 text-[13px] leading-relaxed text-pine"
-        >
-          <CircleCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          Name updated.
-        </p>
-      )}
+      {state?.success && <Alert tone="success">Name updated.</Alert>}
 
       <div className="max-w-md space-y-2">
         <Label htmlFor="name">Display name</Label>
@@ -43,7 +28,7 @@ export function SettingsForm({ initialName }: { initialName: string }) {
           aria-describedby="name-settings-helper"
         />
         <FieldMessage id="name-settings-helper">
-          Used on your dashboard greeting. Leave it empty to remove it.
+          Used to greet you. Leave it empty to remove it.
         </FieldMessage>
       </div>
 

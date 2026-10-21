@@ -1,26 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
+import { safeNextPath } from "@/lib/utils";
 import { SignInForm } from "@/components/signin-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to your VibeOps operations desk.",
+  description: "Sign in to your VibeOps automations.",
 };
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const next = safeNextPath((await searchParams).next);
+  const { user } = (await getSession()) ?? {};
+  if (user) redirect(next ?? "/dashboard");
+
   return (
     <>
       <div>
-        <p className="label-mono text-rust-deep">Operations desk</p>
+        <p className="label-mono text-rust-deep">Sign in</p>
         <h2 className="mt-3 font-display text-[36px] leading-[1.05] tracking-[-0.03em] text-ink">
           Welcome back.
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          Sign in to your operations desk.
+          Sign in to see your automations.
         </p>
       </div>
 
-      <SignInForm />
+      <SignInForm next={next ?? undefined} />
 
       <p className="text-center text-[13px] text-muted">
         Don&apos;t have an account?{" "}

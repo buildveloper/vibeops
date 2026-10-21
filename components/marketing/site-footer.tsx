@@ -2,25 +2,33 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { LogoMark } from "@/components/ui/logo";
 
-const PRODUCT_LINKS = [
+const NAV_LINKS = [
   { href: "#how-it-works", label: "How it works" },
-  { href: "#field-notes", label: "Field notes" },
+  { href: "#templates", label: "Templates" },
   { href: "#questions", label: "Questions" },
-  { href: "/signup", label: "Start free" },
 ];
 
-const ACCOUNT_LINKS = [
-  { href: "/signin", label: "Sign in" },
-  { href: "/signup", label: "Create account" },
-];
+export function SiteFooter({ signedIn = false }: { signedIn?: boolean }) {
+  const productLinks = signedIn
+    ? NAV_LINKS
+    : [...NAV_LINKS, { href: "/signup", label: "Start free" }];
 
-export function SiteFooter() {
+  const accountLinks = signedIn
+    ? [
+        { href: "/dashboard", label: "Your automations" },
+        { href: "/dashboard/settings", label: "Settings" },
+      ]
+    : [
+        { href: "/signin", label: "Sign in" },
+        { href: "/signup", label: "Create account" },
+      ];
+
   return (
     <footer className="border-t border-line-on-ink bg-ink text-paper">
       <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
         <div className="flex items-center justify-between border-b border-line-on-ink py-5">
           <p className="label-mono text-muted-on-ink">
-            Operations automation for small business
+            Automation planning for small business
           </p>
           <p className="label-mono text-muted-on-ink">Est. 2026</p>
         </div>
@@ -37,15 +45,15 @@ export function SiteFooter() {
         <div className="grid gap-10 border-t border-line-on-ink py-10 sm:grid-cols-12">
           <div className="sm:col-span-6">
             <p className="max-w-sm text-sm leading-relaxed text-muted-on-ink">
-              Describe the work. We&apos;ll build the machine. A clear plan for
-              the processes that keep your business moving.
+              Describe the work. We&apos;ll build the machine. A clear
+              automation for the processes that keep your business moving.
             </p>
           </div>
 
           <div className="sm:col-span-3">
             <p className="label-mono text-muted-on-ink">Product</p>
             <ul className="mt-4 space-y-2.5">
-              {PRODUCT_LINKS.map((link) => (
+              {productLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -61,7 +69,7 @@ export function SiteFooter() {
           <div className="sm:col-span-3">
             <p className="label-mono text-muted-on-ink">Account</p>
             <ul className="mt-4 space-y-2.5">
-              {ACCOUNT_LINKS.map((link) => (
+              {accountLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -105,7 +113,7 @@ export function SiteFooter() {
             &copy; 2026 VibeOps
           </p>
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-on-ink">
-            Plans are illustrative examples, not customer results.
+            Templates are illustrative examples, not customer results.
           </p>
         </div>
       </div>

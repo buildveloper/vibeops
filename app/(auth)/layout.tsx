@@ -15,7 +15,7 @@ export default function AuthLayout({
 
         <div className="max-w-md">
           <p className="label-mono text-rust-on-ink">
-            VibeOps / Operations desk
+            VibeOps / Automation planning
           </p>
           <h1 className="mt-5 font-display text-[clamp(2.75rem,4vw,4rem)] leading-[0.98] tracking-[-0.03em] text-paper">
             The work behind the work, handled.
@@ -26,12 +26,12 @@ export default function AuthLayout({
           </p>
 
           <div className="mt-10 max-w-sm border-l-2 border-rust-on-ink pl-4">
-            <p className="label-mono text-muted-on-ink">From a salon brief</p>
+            <p className="label-mono text-muted-on-ink">From a salon owner</p>
             <p className="mt-2 text-[13px] leading-relaxed text-paper/85">
               &ldquo;{FEATURED_NOTE.vibe}&rdquo;
             </p>
             <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-muted-on-ink">
-              Four steps / Six tools / One saved plan
+              Four steps / Six tools / One saved automation
             </p>
           </div>
         </div>

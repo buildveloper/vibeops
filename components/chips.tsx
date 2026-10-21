@@ -1,31 +1,8 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { BUSINESS_TYPES, GOALS } from "@/lib/automation-config";
 import { cn } from "@/lib/utils";
-
-export const BUSINESS_TYPES = [
-  "Salon",
-  "Plumbing",
-  "Consulting",
-  "Retail",
-  "Restaurant",
-  "Law Firm",
-  "Real Estate",
-  "Healthcare",
-  "Construction",
-  "Marketing Agency",
-];
-
-export const GOALS = [
-  "Lead Management",
-  "Client Onboarding",
-  "Invoicing",
-  "Appointment Reminders",
-  "Daily Reports",
-  "Inventory Management",
-  "Customer Follow-up",
-  "Team Scheduling",
-];
 
 function OptionChips({
   options,

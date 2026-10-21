@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { FEATURED_NOTE, FEATURED_PLAN } from "@/lib/examples";
 
-export function PlanSpecimen() {
+export function PlanSpecimen({ openHref }: { openHref: string }) {
   const plan = FEATURED_PLAN;
   const tools = plan.integrations;
 
@@ -16,12 +16,12 @@ export function PlanSpecimen() {
 
       <article className="relative border border-line-strong bg-paper shadow-lift">
         <div className="flex items-center justify-between border-b border-line bg-paper-2 px-4 py-2.5">
-          <span className="label-mono text-muted">Plan / 001</span>
+          <span className="label-mono text-muted">Automation / 001</span>
           <Badge tone="pine">Saved</Badge>
         </div>
 
         <div className="px-5 pb-5 pt-5 sm:px-6">
-          <p className="label-mono text-muted">The brief</p>
+          <p className="label-mono text-muted">Your description</p>
           <p className="mt-2 border-l border-rust pl-3 text-[12px] leading-relaxed text-ink-2">
             &ldquo;{FEATURED_NOTE.vibe}&rdquo;
           </p>
@@ -99,10 +99,10 @@ export function PlanSpecimen() {
               </p>
             </div>
             <Link
-              href="/signup"
+              href={openHref}
               className="group inline-flex items-center gap-1.5 text-[11px] font-medium text-ink transition-colors hover:text-rust-deep"
             >
-              Open a plan
+              Use this template
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </div>

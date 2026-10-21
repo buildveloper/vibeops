@@ -8,12 +8,13 @@ import { generateId } from "lucia";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { GeneratedAutomation } from "@/lib/groq";
+import {
+  MAX_AUTOMATIONS,
+  MAX_DESCRIPTION_LENGTH,
+} from "@/lib/automation-config";
 
-const MAX_AUTOMATIONS = 3;
-const MAX_VIBE_LENGTH = 2000;
-
-function sanitizeVibe(input: string): string {
-  return input.trim().slice(0, MAX_VIBE_LENGTH);
+function sanitizeDescription(input: string): string {
+  return input.trim().slice(0, MAX_DESCRIPTION_LENGTH);
 }
 
 export async function saveAutomation(data: {
@@ -21,13 +22,17 @@ export async function saveAutomation(data: {
   businessType: string;
   goal: string;
   generated: GeneratedAutomation;
-}): Promise<{ error?: string; id?: string }> {
+  replaceId?: string;
+}): Promise<{ error?: string; code?: "limit" | "invalid"; id?: string }> {
   const { user } = (await getSession()) ?? {};
   if (!user) redirect("/signin");
 
-  const sanitizedVibe = sanitizeVibe(data.vibe);
+  const sanitizedVibe = sanitizeDescription(data.vibe);
   if (sanitizedVibe.length < 10) {
-    return { error: "Your workflow description is too short. Please provide more detail." };
+    return {
+      error:
+        "Your description is too short. Please provide more detail before saving.",
+    };
   }
 
   const [row] = await db
@@ -37,13 +42,8 @@ export async function saveAutomation(data: {
     .all();
   const total = row?.total ?? 0;
 
-  if (total >= MAX_AUTOMATIONS) {
-    return { error: "You've reached the 3 automation limit. Delete an existing one to create more." };
-  }
-
   const id = generateId(15);
-
-  await db.insert(automations).values({
+  const newRow = {
     id,
     userId: user.id,
     vibe: sanitizedVibe,
@@ -51,15 +51,56 @@ export async function saveAutomation(data: {
     businessType: data.businessType,
     goal: data.goal,
     status: "saved",
-  });
+  };
+
+  const replaceId = data.replaceId;
+
+  if (replaceId) {
+    const target = await db
+      .select({ id: automations.id })
+      .from(automations)
+      .where(
+        and(eq(automations.id, replaceId), eq(automations.userId, user.id)),
+      )
+      .get();
+
+    if (!target) {
+      return {
+        error: "That automation no longer exists. Choose another one.",
+        code: "invalid",
+      };
+    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(automations)
+        .where(
+          and(eq(automations.id, replaceId), eq(automations.userId, user.id)),
+        );
+      await tx.insert(automations).values(newRow);
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/automations");
+    return { id };
+  }
+
+  if (total >= MAX_AUTOMATIONS) {
+    return {
+      error: `Your ${MAX_AUTOMATIONS} automation slots are full. Choose one to replace.`,
+      code: "limit",
+    };
+  }
+
+  await db.insert(automations).values(newRow);
 
   await db
     .update(users)
     .set({ workflowCount: sql`workflow_count + 1` })
     .where(eq(users.id, user.id));
 
-  revalidatePath("/dashboard/automations");
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/automations");
   return { id };
 }
 
@@ -84,7 +125,7 @@ export async function deleteAutomation(id: string): Promise<{ error?: string }> 
     .set({ workflowCount: sql`MAX(workflow_count - 1, 0)` })
     .where(eq(users.id, user.id));
 
-  revalidatePath("/dashboard/automations");
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/automations");
   return {};
 }

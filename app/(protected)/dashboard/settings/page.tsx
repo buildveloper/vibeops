@@ -11,10 +11,11 @@ import { PageHeader } from "@/components/page-header";
 import { SettingsForm } from "@/components/settings-form";
 import { Button } from "@/components/ui/button";
 import { Meter } from "@/components/ui/meter";
+import { MAX_AUTOMATIONS } from "@/lib/automation-config";
 
 export const metadata: Metadata = {
   title: "Settings",
-  description: "Your VibeOps account and plan.",
+  description: "Your VibeOps account and usage.",
 };
 
 export default async function SettingsPage() {
@@ -33,7 +34,7 @@ export default async function SettingsPage() {
       <PageHeader
         eyebrow="Account"
         title="Settings"
-        description="Your account and plan."
+        description="Your account and usage."
       />
 
       <div className="mt-2 max-w-2xl">
@@ -42,7 +43,7 @@ export default async function SettingsPage() {
             Profile
           </h2>
           <p className="mt-1 text-[13px] leading-relaxed text-muted">
-            The name that appears on your operations desk.
+            The name shown in your account.
           </p>
 
           <SettingsForm initialName={user.name ?? ""} />
@@ -68,34 +69,37 @@ export default async function SettingsPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-ink">
-                Plan
+                Usage
               </h2>
               <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                Plans are included while VibeOps is in early access.
+                Every account includes {MAX_AUTOMATIONS} saved automations.
               </p>
             </div>
             <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
-              {savedCount} of 3 saved
+              {savedCount} of {MAX_AUTOMATIONS} used
             </span>
           </div>
 
           <Meter
             value={savedCount}
+            max={MAX_AUTOMATIONS}
             className="mt-5 max-w-md"
-            label={`${savedCount} of 3 plans saved`}
+            label={`${savedCount} of ${MAX_AUTOMATIONS} automations saved`}
           />
 
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <p className="text-[13px] text-ink-2">
-              {savedCount >= 3
-                ? "All three slots are full."
-                : `${3 - savedCount} slot${3 - savedCount === 1 ? "" : "s"} open.`}
+              {savedCount >= MAX_AUTOMATIONS
+                ? "All automations are in use. Saving a new one will ask you to replace an existing one."
+                : `${MAX_AUTOMATIONS - savedCount} automation${
+                    MAX_AUTOMATIONS - savedCount === 1 ? "" : "s"
+                  } available.`}
             </p>
             <Link
-              href="/dashboard/automations"
+              href="/dashboard"
               className="inline-flex items-center gap-1.5 text-[12px] font-medium text-rust-deep transition-colors hover:text-ink"
             >
-              Open library
+              View automations
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </div>
@@ -120,7 +124,7 @@ export default async function SettingsPage() {
 
         <section className="py-7">
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
-            VibeOps v1.0 / Next.js, Drizzle, Groq
+            VibeOps v1.0 / Early access
           </p>
         </section>
       </div>

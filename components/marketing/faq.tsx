@@ -4,32 +4,32 @@ const QUESTIONS = [
   {
     question: "Does VibeOps run the automations for me?",
     answer:
-      "It builds the plan and the exact step sequence. You connect the tools you already use, or hand the plan to whoever sets them up. The simulation lets you review the logic before anything goes live.",
+      "It builds the automation and the exact step sequence. You connect the tools you already use, or hand it to whoever sets them up. You review every step before saving.",
   },
   {
     question: "Do I need to know Zapier, Make, or n8n?",
     answer:
-      "No. The plan names the tools and explains what each step does. If you already use an automation platform, the pattern will look familiar. If you do not, the plan is still a clear handoff document.",
+      "No. The automation names the tools and explains what each step does. If you already use an automation platform, the pattern will look familiar. If you do not, it is still a clear handoff document.",
   },
   {
     question: "What happens to the work I describe?",
     answer:
-      "Your brief is stored with your account and sent to our AI provider only to generate the plan. Deleting the plan removes it from your library.",
+      "Your description is stored with your account and sent to our AI provider only to generate the automation. Deleting the automation removes it from your account.",
   },
   {
     question: "How accurate is the time estimate?",
     answer:
-      "It is an estimate from the plan, not a guarantee. Use it as a starting point, then measure the real change once the automation is running.",
+      "It is an estimate from the automation, not a guarantee. Use it as a starting point, then measure the real change once the automation is running.",
   },
   {
-    question: "What happens after three saved plans?",
+    question: "What happens after three saved automations?",
     answer:
-      "You can still build and preview new plans. To save another one, delete a plan from your library. There is no paid plan to upgrade to right now.",
+      "You can still create and preview new automations. To save another one, choose one of your three to replace when you save. There is no paid plan to upgrade to right now.",
   },
   {
-    question: "Can I export a plan?",
+    question: "Can I export an automation?",
     answer:
-      "Yes. Export any generated plan as a Markdown file with the brief, steps, tools, and estimated time. No lock-in.",
+      "Yes. Export any automation as a Markdown file from its detail page or before saving. No lock-in.",
   },
 ];
 

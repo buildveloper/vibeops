@@ -8,24 +8,19 @@ import { ButtonLink } from "@/components/ui/button";
 
 const NAV = [
   { href: "#how-it-works", label: "How it works" },
-  { href: "#field-notes", label: "Field notes" },
+  { href: "#templates", label: "Templates" },
   { href: "#questions", label: "Questions" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ signedIn = false }: { signedIn?: boolean }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   function openMenu() {
-    document.documentElement.style.overflow = "hidden";
     if (!dialogRef.current?.open) dialogRef.current?.showModal();
   }
 
   function closeMenu() {
     dialogRef.current?.close();
-  }
-
-  function handleClose() {
-    document.documentElement.style.overflow = "";
   }
 
   return (
@@ -46,15 +41,23 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
-          <Link
-            href="/signin"
-            className="text-[13px] text-ink-2 transition-colors hover:text-ink"
-          >
-            Sign in
-          </Link>
-          <ButtonLink href="/signup" size="sm">
-            Start free
-          </ButtonLink>
+          {signedIn ? (
+            <ButtonLink href="/dashboard" size="sm">
+              Open your automations
+            </ButtonLink>
+          ) : (
+            <>
+              <Link
+                href="/signin"
+                className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+              >
+                Sign in
+              </Link>
+              <ButtonLink href="/signup" size="sm">
+                Start free
+              </ButtonLink>
+            </>
+          )}
         </div>
 
         <button
@@ -71,11 +74,10 @@ export function SiteHeader() {
       <dialog
         ref={dialogRef}
         aria-label="Site menu"
-        onClose={handleClose}
         onClick={(event) => {
           if (event.target === dialogRef.current) closeMenu();
         }}
-        className="dialog-drawer fixed inset-y-0 right-0 left-auto m-0 h-dvh w-[min(88vw,360px)] max-w-none animate-slide-in-right rounded-none border-0 border-l border-line bg-paper p-0 text-ink shadow-lift md:hidden"
+        className="fixed inset-y-0 right-0 left-auto m-0 h-dvh w-[min(88vw,360px)] max-w-none animate-slide-in-right rounded-none border-0 border-l border-line bg-paper p-0 text-ink shadow-lift md:hidden"
       >
         <div className="flex h-full flex-col">
           <div className="flex h-[72px] items-center justify-between border-b border-line px-5">
@@ -101,21 +103,29 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/signin"
-              onClick={closeMenu}
-              className="border-b border-line py-4 font-display text-[28px] leading-none tracking-[-0.02em] text-ink"
-            >
-              Sign in
-            </Link>
+            {!signedIn && (
+              <Link
+                href="/signin"
+                onClick={closeMenu}
+                className="border-b border-line py-4 font-display text-[28px] leading-none tracking-[-0.02em] text-ink"
+              >
+                Sign in
+              </Link>
+            )}
           </nav>
 
           <div className="border-t border-line p-5">
-            <ButtonLink href="/signup" className="w-full" onClick={closeMenu}>
-              Start free
+            <ButtonLink
+              href={signedIn ? "/dashboard" : "/signup"}
+              className="w-full"
+              onClick={closeMenu}
+            >
+              {signedIn ? "Open your automations" : "Start free"}
             </ButtonLink>
             <p className="label-mono mt-4 text-muted">
-              Three plans free / No card
+              {signedIn
+                ? "Your workspace is ready"
+                : "Three automations free / No card"}
             </p>
           </div>
         </div>

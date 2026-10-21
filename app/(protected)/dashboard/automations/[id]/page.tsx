@@ -10,11 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { StepTimeline } from "@/components/step-timeline";
 import { DeletePlanButton } from "@/components/confirm-dialog";
+import { ExportPlanButton } from "@/components/export-plan-button";
 import { parsePlan, uniqueTools } from "@/lib/plans";
 import { buildCreateHref, formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Plan details",
+  title: "Automation details",
 };
 
 export default async function AutomationDetailPage({
@@ -49,11 +50,11 @@ export default async function AutomationDetailPage({
   return (
     <div>
       <Link
-        href="/dashboard/automations"
+        href="/dashboard"
         className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted transition-colors hover:text-ink"
       >
         <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-        Automation library
+        Your automations
       </Link>
 
       <header className="mt-5 border-b border-line pb-6">
@@ -79,7 +80,8 @@ export default async function AutomationDetailPage({
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <ExportPlanButton plan={plan} description={item.vibe} />
             <ButtonLink
               href={buildCreateHref({
                 vibe: item.vibe,
@@ -89,13 +91,13 @@ export default async function AutomationDetailPage({
               variant="secondary"
               size="md"
             >
-              Use as brief
+              Start a new automation
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </ButtonLink>
             <DeletePlanButton
               id={item.id}
               title={plan.title}
-              redirectTo="/dashboard/automations"
+              redirectTo="/dashboard"
             />
           </div>
         </div>
@@ -103,10 +105,10 @@ export default async function AutomationDetailPage({
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div>
-          <section aria-labelledby="the-brief">
+          <section aria-labelledby="the-description">
             <div className="flex items-center justify-between gap-4">
-              <p id="the-brief" className="label-mono text-muted">
-                The brief
+              <p id="the-description" className="label-mono text-muted">
+                Your description
               </p>
               <p className="font-mono text-[10px] text-muted">
                 {formatDate(item.createdAt)}
@@ -117,10 +119,10 @@ export default async function AutomationDetailPage({
             </blockquote>
           </section>
 
-          <section aria-labelledby="the-plan" className="mt-10">
+          <section aria-labelledby="the-steps" className="mt-10">
             <div className="flex items-center justify-between gap-4 border-b border-line pb-3">
-              <p id="the-plan" className="label-mono text-muted">
-                The plan
+              <p id="the-steps" className="label-mono text-muted">
+                The steps
               </p>
               <p className="font-mono text-[10px] text-muted">
                 {String(plan.steps.length).padStart(2, "0")} steps
@@ -134,12 +136,12 @@ export default async function AutomationDetailPage({
 
         <aside className="space-y-6">
           <section
-            aria-labelledby="plan-details"
+            aria-labelledby="automation-details"
             className="border border-line bg-paper p-5 lg:sticky lg:top-20"
           >
             <div className="flex items-center justify-between gap-3">
-              <p id="plan-details" className="label-mono text-muted">
-                Plan details
+              <p id="automation-details" className="label-mono text-muted">
+                Details
               </p>
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-muted">
                 {item.id.slice(0, 6)}
@@ -196,8 +198,8 @@ export default async function AutomationDetailPage({
                   aria-hidden="true"
                 />
                 <p className="text-[11px] leading-relaxed text-muted">
-                  This is a plan, not a live integration. Connect the listed
-                  tools in your automation platform.
+                  This is a set of steps, not a live integration. Connect the
+                  listed tools in your automation platform.
                 </p>
               </div>
             </div>

@@ -5,10 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ArrowUp,
-  ArrowUpRight,
   BookOpen,
   FolderOpen,
-  LayoutDashboard,
   LogOut,
   Menu,
   Plus,
@@ -19,146 +17,140 @@ import { Logo } from "@/components/ui/logo";
 import { Meter } from "@/components/ui/meter";
 import { ButtonLink } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-actions";
+import { MAX_AUTOMATIONS } from "@/lib/automation-config";
 import { cn, initials } from "@/lib/utils";
 
 type ShellUser = {
   email: string;
   name: string | null;
-  workflowCount: number;
 };
 
-const NAV_GROUPS = [
-  {
-    label: "Workspace",
-    items: [
-      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/dashboard/create", label: "New automation", icon: Plus },
-      { href: "/dashboard/automations", label: "Library", icon: FolderOpen },
-    ],
-  },
-  {
-    label: "Reference",
-    items: [
-      { href: "/dashboard/examples", label: "Field notes", icon: BookOpen },
-      { href: "/dashboard/settings", label: "Settings", icon: Settings },
-    ],
-  },
+const NAV = [
+  { href: "/dashboard", label: "Automations", icon: FolderOpen },
+  { href: "/dashboard/examples", label: "Templates", icon: BookOpen },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/dashboard") return pathname === "/dashboard";
+  if (href === "/dashboard") {
+    return (
+      pathname === "/dashboard" || pathname.startsWith("/dashboard/automations")
+    );
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function sectionLabel(pathname: string) {
-  if (pathname.startsWith("/dashboard/automations/")) return "Library / Plan";
-  if (pathname.startsWith("/dashboard/automations")) return "Library";
-  if (pathname.startsWith("/dashboard/create")) return "New automation";
-  if (pathname.startsWith("/dashboard/examples")) return "Field notes";
-  if (pathname.startsWith("/dashboard/settings")) return "Settings";
-  return "Operations desk";
 }
 
 function SidebarContent({
   user,
+  count,
   pathname,
   onNavigate,
 }: {
   user: ShellUser;
+  count: number;
   pathname: string;
   onNavigate?: () => void;
 }) {
-  const count = user.workflowCount;
-
   return (
     <>
       <nav className="flex-1 overflow-y-auto px-3 py-5" aria-label="Primary">
-        {NAV_GROUPS.map((group) => (
-          <div key={group.label} className="mb-6 last:mb-0">
-            <p className="label-mono px-3 text-muted-on-ink">{group.label}</p>
-            <div className="mt-2 space-y-0.5">
-              {group.items.map((item) => {
-                const active = isActive(pathname, item.href);
-                const Icon = item.icon;
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onNavigate}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "group relative flex items-center gap-3 rounded-sm px-3 py-2.5 text-[13px] transition-colors",
-                      active
-                        ? "bg-paper/10 text-paper"
-                        : "text-muted-on-ink hover:bg-paper/5 hover:text-paper",
-                    )}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 bg-rust-on-ink transition-opacity",
-                        active ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                    <Icon
-                      className={cn(
-                        "h-[18px] w-[18px] shrink-0",
-                        active
-                          ? "text-rust-on-ink"
-                          : "text-muted-on-ink group-hover:text-paper",
-                      )}
-                      strokeWidth={1.75}
-                      aria-hidden="true"
-                    />
-                    <span className="flex-1">{item.label}</span>
-                    {item.href === "/dashboard/automations" && (
-                      <span className="font-mono text-[10px] text-muted-on-ink">
-                        {count}/3
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
+        {pathname !== "/dashboard/create" && (
+          <div className="mb-5">
+            <ButtonLink
+              href="/dashboard/create"
+              size="md"
+              className="w-full"
+              onClick={onNavigate}
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              New automation
+            </ButtonLink>
           </div>
-        ))}
+        )}
+
+        <div className="space-y-0.5">
+          {NAV.map((item) => {
+            const active = isActive(pathname, item.href);
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "group relative flex items-center gap-3 rounded-sm px-3 py-2.5 text-[13px] transition-colors",
+                  active
+                    ? "bg-paper/10 text-paper"
+                    : "text-muted-on-ink hover:bg-paper/5 hover:text-paper",
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 bg-rust-on-ink transition-opacity",
+                    active ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <Icon
+                  className={cn(
+                    "h-[18px] w-[18px] shrink-0",
+                    active
+                      ? "text-rust-on-ink"
+                      : "text-muted-on-ink group-hover:text-paper",
+                  )}
+                  strokeWidth={1.75}
+                  aria-hidden="true"
+                />
+                <span className="flex-1">{item.label}</span>
+                {item.href === "/dashboard" && (
+                  <span className="font-mono text-[10px] text-muted-on-ink">
+                    {count}/{MAX_AUTOMATIONS}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       <div className="border-t border-line-on-ink p-4">
         <div className="border border-line-on-ink p-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="label-mono text-muted-on-ink">Plan usage</p>
-            <p className="font-mono text-[10px] text-paper">{count}/3</p>
+            <p className="label-mono text-muted-on-ink">Free plan</p>
+            <p className="font-mono text-[10px] text-paper">
+              {count}/{MAX_AUTOMATIONS}
+            </p>
           </div>
           <Meter
-            value={Math.min(count, 3)}
+            value={Math.min(count, MAX_AUTOMATIONS)}
+            max={MAX_AUTOMATIONS}
             inverse
             className="mt-2"
-            label={`${count} of 3 plans saved`}
+            label={`${count} of ${MAX_AUTOMATIONS} automations saved`}
           />
-          <Link
-            href="/dashboard/automations"
-            onClick={onNavigate}
-            className="mt-3 flex items-center justify-between text-[11px] text-muted-on-ink transition-colors hover:text-paper"
-          >
-            <span>Open library</span>
-            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
+          <p className="mt-2 text-[11px] leading-relaxed text-muted-on-ink">
+            Saved automations
+          </p>
         </div>
 
         <div className="mt-4 flex items-center gap-2.5">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line-on-ink bg-paper/10 font-mono text-[10px] text-paper">
             {initials(user.name, user.email)}
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[12px] font-medium text-paper">
+          <Link
+            href="/dashboard/settings"
+            onClick={onNavigate}
+            className="min-w-0 flex-1"
+          >
+            <p className="truncate text-[12px] font-medium text-paper transition-colors hover:text-rust-on-ink">
               {user.name || "Your account"}
             </p>
             <p className="truncate font-mono text-[9px] text-muted-on-ink">
               {user.email}
             </p>
-          </div>
+          </Link>
           <form action={signOut}>
             <button
               type="submit"
@@ -180,9 +172,11 @@ function SidebarContent({
 
 export function AppShell({
   user,
+  automationCount,
   children,
 }: {
   user: ShellUser;
+  automationCount: number;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -193,16 +187,11 @@ export function AppShell({
   }, [pathname]);
 
   function openMenu() {
-    document.documentElement.style.overflow = "hidden";
     if (!menuRef.current?.open) menuRef.current?.showModal();
   }
 
   function closeMenu() {
     menuRef.current?.close();
-  }
-
-  function handleMenuClose() {
-    document.documentElement.style.overflow = "";
   }
 
   return (
@@ -211,7 +200,11 @@ export function AppShell({
         <div className="flex h-16 shrink-0 items-center border-b border-line-on-ink px-5">
           <Logo href="/dashboard" tone="paper" />
         </div>
-        <SidebarContent user={user} pathname={pathname} />
+        <SidebarContent
+          user={user}
+          count={automationCount}
+          pathname={pathname}
+        />
       </aside>
 
       <div className="lg:pl-64">
@@ -238,31 +231,6 @@ export function AppShell({
           </div>
         </div>
 
-        <div className="sticky top-0 z-20 hidden h-14 items-center justify-between border-b border-line bg-paper px-8 lg:flex">
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em]">
-            <span className="text-muted">VibeOps</span>
-            <span className="text-line-strong" aria-hidden="true">
-              /
-            </span>
-            <span className="text-ink-2">{sectionLabel(pathname)}</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard/examples"
-              className="text-[12px] text-muted transition-colors hover:text-ink"
-            >
-              Field notes
-            </Link>
-            {pathname !== "/dashboard/create" && (
-              <ButtonLink href="/dashboard/create" size="sm">
-                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                New automation
-              </ButtonLink>
-            )}
-          </div>
-        </div>
-
         <main id="main" className="min-w-0">
           <div className="mx-auto w-full max-w-[1200px] px-5 py-8 sm:px-8 sm:py-10">
             {children}
@@ -271,7 +239,7 @@ export function AppShell({
           <div className="mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8">
             <div className="flex flex-col gap-2 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
-                VibeOps / Operations automation
+                VibeOps / Automation planning
               </p>
               <div className="flex items-center gap-4">
                 <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
@@ -293,7 +261,6 @@ export function AppShell({
       <dialog
         ref={menuRef}
         aria-label="Navigation"
-        onClose={handleMenuClose}
         onClick={(event) => {
           if (event.target === menuRef.current) closeMenu();
         }}
@@ -313,6 +280,7 @@ export function AppShell({
           </div>
           <SidebarContent
             user={user}
+            count={automationCount}
             pathname={pathname}
             onNavigate={closeMenu}
           />

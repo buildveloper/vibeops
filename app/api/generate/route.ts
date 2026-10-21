@@ -2,23 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { generateAutomation } from "@/lib/groq";
 import { checkRateLimit } from "@/lib/rate-limit";
-
-const MAX_VIBE_LENGTH = 2000;
+import { MAX_DESCRIPTION_LENGTH } from "@/lib/automation-config";
 
 export async function POST(req: NextRequest) {
   const { user } = (await getSession()) ?? {};
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { allowed, retryAfter } = checkRateLimit(user.id);
-  if (!allowed) {
-    return NextResponse.json(
-      { error: `Too many requests. Try again in ${retryAfter} seconds.` },
-      {
-        status: 429,
-        headers: { "Retry-After": String(retryAfter) },
-      },
-    );
-  }
 
   let body: { vibe?: string; businessType?: string; goal?: string };
   try {
@@ -40,11 +28,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid field types" }, { status: 400 });
   }
 
-  const sanitizedVibe = vibe.trim().slice(0, MAX_VIBE_LENGTH);
+  const sanitizedVibe = vibe.trim().slice(0, MAX_DESCRIPTION_LENGTH);
   if (sanitizedVibe.length < 10) {
     return NextResponse.json(
-      { error: "Workflow description too short. Please provide at least 10 characters." },
+      { error: "Describe the task in at least 10 characters." },
       { status: 400 },
+    );
+  }
+
+  const { allowed, retryAfter } = checkRateLimit(user.id);
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        error: `You're going a little fast. Try again in ${retryAfter} seconds.`,
+        retryAfter,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfter) },
+      },
     );
   }
 

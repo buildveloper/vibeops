@@ -33,8 +33,8 @@ export default function ErrorPage({
             Something went wrong.
           </h1>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted">
-            The page could not finish loading. Try again, or return to the
-            operations desk.
+            The page could not finish loading. Try again, or go back to your
+            automations.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button onClick={reset} size="md">
@@ -56,7 +56,7 @@ export default function ErrorPage({
       <footer className="border-t border-line px-5 py-5 sm:px-8">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4">
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
-            VibeOps / Operations automation
+            VibeOps / Automation planning
           </p>
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
             &copy; 2026

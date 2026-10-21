@@ -56,3 +56,10 @@ export function slugify(value: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+export function safeNextPath(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  if (!value.startsWith("/dashboard")) return null;
+  if (value.includes("://")) return null;
+  return value;
+}
