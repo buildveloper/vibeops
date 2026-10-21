@@ -21,7 +21,7 @@ export async function saveAutomation(data: {
   businessType: string;
   goal: string;
   generated: GeneratedAutomation;
-}): Promise<{ error?: string }> {
+}): Promise<{ error?: string; id?: string }> {
   const { user } = (await getSession()) ?? {};
   if (!user) redirect("/signin");
 
@@ -60,7 +60,7 @@ export async function saveAutomation(data: {
 
   revalidatePath("/dashboard/automations");
   revalidatePath("/dashboard");
-  return {};
+  return { id };
 }
 
 export async function deleteAutomation(id: string): Promise<{ error?: string }> {

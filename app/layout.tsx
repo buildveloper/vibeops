@@ -1,44 +1,59 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const instrument = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
+  display: "swap",
 });
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "VibeOps — AI-Powered Operations Automation",
+    default: "VibeOps | Operations automation for small business",
     template: "%s | VibeOps",
   },
   description:
-    "Describe your messy operations in plain English and let AI turn them into automated workflows. Built for small businesses and professionals who want to work smarter.",
+    "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
+  applicationName: "VibeOps",
+  authors: [{ name: "VibeOps" }],
+  creator: "Christopher John",
   keywords: [
     "operations automation",
-    "AI workflows",
-    "business automation",
+    "small business automation",
     "workflow builder",
-    "no-code automation",
+    "AI operations",
+    "business process automation",
   ],
-  authors: [{ name: "VibeOps" }],
   openGraph: {
-    title: "VibeOps — AI-Powered Operations Automation",
-    description:
-      "Describe your messy operations in plain English and let AI turn them into automated workflows.",
     type: "website",
+    locale: "en_US",
     siteName: "VibeOps",
+    title: "VibeOps | Operations automation for small business",
+    description:
+      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "VibeOps — AI-Powered Operations Automation",
+    title: "VibeOps | Operations automation for small business",
     description:
-      "Describe your messy operations in plain English and let AI turn them into automated workflows.",
+      "Describe the work in plain English. VibeOps turns it into a clear, step-by-step automation plan for the tools you already use.",
   },
   robots: {
     index: true,
@@ -54,9 +69,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${instrument.variable} ${plexMono.variable} h-full`}
     >
-      <body className="min-h-full bg-slate-950 text-slate-100">{children}</body>
+      <body className="min-h-full bg-paper text-ink antialiased">
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

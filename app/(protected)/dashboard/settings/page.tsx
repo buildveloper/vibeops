@@ -1,38 +1,128 @@
-import { getSession } from "@/lib/auth";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { count, eq } from "drizzle-orm";
+import { ArrowRight, Lock, LogOut } from "lucide-react";
+import { getSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { automations } from "@/lib/db/schema";
+import { signOut } from "@/lib/auth-actions";
+import { PageHeader } from "@/components/page-header";
+import { SettingsForm } from "@/components/settings-form";
+import { Button } from "@/components/ui/button";
+import { Meter } from "@/components/ui/meter";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "Your VibeOps account and plan.",
+};
 
 export default async function SettingsPage() {
   const { user } = (await getSession()) ?? {};
   if (!user) redirect("/signin");
 
-  return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-100">
-          Settings
-        </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Manage your account and preferences.
-        </p>
-      </div>
+  const [row] = await db
+    .select({ total: count() })
+    .from(automations)
+    .where(eq(automations.userId, user.id))
+    .all();
+  const savedCount = row?.total ?? 0;
 
-      <div className="max-w-md space-y-4">
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-            Email
+  return (
+    <div>
+      <PageHeader
+        eyebrow="Account"
+        title="Settings"
+        description="Your account and plan."
+      />
+
+      <div className="mt-2 max-w-2xl">
+        <section className="border-b border-line py-7">
+          <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-ink">
+            Profile
+          </h2>
+          <p className="mt-1 text-[13px] leading-relaxed text-muted">
+            The name that appears on your operations desk.
           </p>
-          <p className="mt-1 text-sm text-slate-300">
-            {user?.email}
+
+          <SettingsForm initialName={user.name ?? ""} />
+
+          <div className="mt-6 max-w-md">
+            <p className="label-mono text-muted">Email</p>
+            <div className="mt-2 flex h-12 items-center justify-between gap-3 border border-line bg-paper-2 px-3.5">
+              <span className="truncate text-[14px] text-ink-2">
+                {user.email}
+              </span>
+              <Lock
+                className="h-4 w-4 shrink-0 text-muted"
+                aria-hidden="true"
+              />
+            </div>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
+              Email changes are not supported yet.
+            </p>
+          </div>
+        </section>
+
+        <section className="border-b border-line py-7">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-ink">
+                Plan
+              </h2>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted">
+                Plans are included while VibeOps is in early access.
+              </p>
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+              {savedCount} of 3 saved
+            </span>
+          </div>
+
+          <Meter
+            value={savedCount}
+            className="mt-5 max-w-md"
+            label={`${savedCount} of 3 plans saved`}
+          />
+
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <p className="text-[13px] text-ink-2">
+              {savedCount >= 3
+                ? "All three slots are full."
+                : `${3 - savedCount} slot${3 - savedCount === 1 ? "" : "s"} open.`}
+            </p>
+            <Link
+              href="/dashboard/automations"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-rust-deep transition-colors hover:text-ink"
+            >
+              Open library
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+
+        <section className="border-b border-line py-7">
+          <h2 className="text-[18px] font-semibold tracking-[-0.02em] text-ink">
+            Session
+          </h2>
+          <p className="mt-1 text-[13px] leading-relaxed text-muted">
+            Signed in as <span className="text-ink-2">{user.email}</span>.
+            Sessions are cookie-based and expire automatically.
           </p>
-        </div>
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-            Name
+
+          <form action={signOut} className="mt-4">
+            <Button type="submit" variant="secondary" size="md">
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Sign out
+            </Button>
+          </form>
+        </section>
+
+        <section className="py-7">
+          <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
+            VibeOps v1.0 / Next.js, Drizzle, Groq
           </p>
-          <p className="mt-1 text-sm text-slate-300">
-            {user?.name ?? "Not set"}
-          </p>
-        </div>
+        </section>
       </div>
     </div>
   );

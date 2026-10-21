@@ -1,10 +1,26 @@
-import { getSession } from "@/lib/auth";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { desc, eq } from "drizzle-orm";
+import { ArrowRight, Plus } from "lucide-react";
+import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { automations } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
-import Link from "next/link";
-import { AutomationCard } from "@/components/automation-card";
+import { PageHeader } from "@/components/page-header";
+import {
+  AUTOMATION_GRID,
+  AutomationRow,
+} from "@/components/automation-row";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Badge } from "@/components/ui/badge";
+import { Meter } from "@/components/ui/meter";
+import { ButtonLink } from "@/components/ui/button";
+import { parsePlan } from "@/lib/plans";
+
+export const metadata: Metadata = {
+  title: "Automation library",
+  description: "The automation plans saved to your VibeOps account.",
+};
 
 export default async function AutomationsPage() {
   const { user } = (await getSession()) ?? {};
@@ -17,78 +33,108 @@ export default async function AutomationsPage() {
     .orderBy(desc(automations.createdAt))
     .all();
 
+  const count = items.length;
+  const atLimit = count >= 3;
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-100">
-            My Automations
-          </h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {items.length}/3 automations used
-          </p>
-          <div className="mt-2 h-1.5 w-48 overflow-hidden rounded-full bg-slate-800">
-            <div
-              className="h-full rounded-full bg-indigo-500 transition-all"
-              style={{ width: `${(items.length / 3) * 100}%` }}
-            />
-          </div>
-        </div>
-        {items.length < 3 && (
-          <Link
+    <div>
+      <PageHeader
+        eyebrow="Workspace"
+        title="Automation library"
+        description="Plans you have saved. Three is the current limit."
+        meta={<span>{count} of 3 saved</span>}
+        actions={
+          <ButtonLink
             href="/dashboard/create"
-            className="inline-flex shrink-0 items-center rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
+            variant={atLimit ? "secondary" : "primary"}
+            size="md"
           >
-            + New Automation
-          </Link>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {atLimit ? "Build a preview" : "New automation"}
+          </ButtonLink>
+        }
+      />
+
+      <div className="mt-6 flex flex-col gap-3 border-y border-line py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <p className="label-mono text-muted">Plan usage</p>
+          <Meter
+            value={count}
+            className="w-32"
+            label={`${count} of 3 plans saved`}
+          />
+          <p className="font-mono text-[10px] text-muted">{count}/3</p>
+        </div>
+
+        {atLimit ? (
+          <Badge tone="rust">Limit reached / Delete one to save another</Badge>
+        ) : (
+          <Badge tone="pine">
+            {3 - count} slot{3 - count === 1 ? "" : "s"} open
+          </Badge>
         )}
       </div>
 
-      {items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-800 p-12 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-900">
-            <svg
-              className="h-6 w-6 text-slate-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-sm font-medium text-slate-300">
-            No automations yet
-          </h3>
-          <p className="mt-1 text-sm text-slate-500">
-            Describe your messy workflow and let AI structure it for you — up to
-            3 free automations.
-          </p>
-          <Link
-            href="/dashboard/create"
-            className="mt-4 inline-flex items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
-          >
-            Create Your First Automation
-          </Link>
+      {count === 0 ? (
+        <div className="mt-8">
+          <EmptyState
+            label="Blank sheet"
+            title="The board is clear."
+            description="Describe a process you run by hand and VibeOps will turn it into a step-by-step automation."
+            action={
+              <ButtonLink href="/dashboard/create" size="md">
+                Map your first automation
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </ButtonLink>
+            }
+            secondary={
+              <Link
+                href="/dashboard/examples"
+                className="text-[13px] font-medium text-rust-deep underline-offset-4 hover:underline"
+              >
+                Start from a field note
+              </Link>
+            }
+          />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {items.map((a) => (
-            <AutomationCard
-              key={a.id}
-              id={a.id}
-              vibe={a.vibe}
-              businessType={a.businessType}
-              goal={a.goal}
-              status={a.status}
-              createdAt={a.createdAt}
-              generatedSteps={a.generatedSteps}
-            />
-          ))}
+        <div className="mt-8">
+          <div
+            className={`hidden border-b border-line pb-2 ${AUTOMATION_GRID}`}
+          >
+            <span />
+            <span className="label-mono text-muted">Plan</span>
+            <span className="label-mono text-muted">Business</span>
+            <span className="label-mono text-muted">Steps</span>
+            <span className="label-mono text-muted">Est. time</span>
+            <span className="label-mono text-muted">Saved</span>
+            <span className="label-mono text-muted">Status</span>
+            <span />
+          </div>
+
+          <div>
+            {items.map((item, index) => {
+              const plan = parsePlan(item.generatedSteps);
+
+              return (
+                <AutomationRow
+                  key={item.id}
+                  id={item.id}
+                  title={plan?.title ?? "Untitled plan"}
+                  businessType={item.businessType}
+                  goal={item.goal}
+                  status={item.status}
+                  createdAt={item.createdAt}
+                  plan={plan}
+                  index={index}
+                />
+              );
+            })}
+          </div>
+
+          <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.1em] text-muted">
+            Plans are stored in your account. Export any plan from the builder.
+          </p>
         </div>
       )}
     </div>

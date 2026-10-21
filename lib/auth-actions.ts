@@ -98,6 +98,12 @@ export async function signIn(
 }
 
 export async function signOut() {
+  const sessionId = (await cookies()).get(auth.sessionCookieName)?.value ?? null;
+  if (sessionId) {
+    try {
+      await auth.invalidateSession(sessionId);
+    } catch {}
+  }
   const sessionCookie = auth.createBlankSessionCookie();
   (await cookies()).set(
     sessionCookie.name,

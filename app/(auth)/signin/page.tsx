@@ -1,25 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SignInForm } from "@/components/signin-form";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  description: "Sign in to your VibeOps operations desk.",
+};
 
 export default function SignInPage() {
   return (
     <>
-      <div className="space-y-2 text-center">
-        <h2 className="text-xl font-semibold text-slate-100">Welcome back</h2>
-        <p className="text-sm text-slate-400">
-          Sign in to your VibeOps account.
+      <div>
+        <p className="label-mono text-rust-deep">Operations desk</p>
+        <h2 className="mt-3 font-display text-[36px] leading-[1.05] tracking-[-0.03em] text-ink">
+          Welcome back.
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          Sign in to your operations desk.
         </p>
       </div>
 
       <SignInForm />
 
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-[13px] text-muted">
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-medium text-indigo-400 hover:text-indigo-300"
+          className="font-medium text-rust-deep underline-offset-4 hover:underline"
         >
-          Sign up
+          Create one
         </Link>
       </p>
     </>

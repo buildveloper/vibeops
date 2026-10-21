@@ -1,12 +1,14 @@
 # VibeOps
 
-**AI-Powered Operations Automation Studio**
+**Operations Automation Studio**
 
-Describe your messy business processes in plain English. VibeOps turns your "vibe" into structured, executable automation workflows — powered by Groq's Llama 3.3 70B. Built for real small businesses, consultants, and professionals who want to work smarter, not harder.
+Describe the work in plain English. VibeOps turns it into a structured, step-by-step automation plan for the tools your business already uses. Built for small businesses, consultants, and professionals who want fewer loose ends.
 
 <p align="center">
-  <strong>Vibe → AI → Automated Workflow</strong>
+  <strong>Describe the work. We'll build the machine.</strong>
 </p>
+
+The interface is built on **The Operations Ledger** design system: warm paper, ink, rust, Fraunces, Instrument Sans, and IBM Plex Mono. Plans are presented as documents, not dashboard cards.
 
 ---
 
@@ -16,7 +18,7 @@ Describe your messy business processes in plain English. VibeOps turns your "vib
 |-------|-----------|
 | **Framework** | Next.js 16 (App Router + Turbopack) |
 | **Language** | TypeScript (strict mode) |
-| **Styling** | Tailwind CSS v4 — Dark slate minimal theme |
+| **Styling** | Tailwind CSS v4 — warm paper and ink operations system |
 | **Database** | LibSQL (Turso-compatible) via `@libsql/client` |
 | **ORM** | Drizzle ORM — type-safe, parameterized queries |
 | **Auth** | Lucia v3 — session-based auth with argon2 password hashing |
@@ -27,11 +29,12 @@ Describe your messy business processes in plain English. VibeOps turns your "vib
 
 ## Key Features
 
-- **Vibe-to-Workflow Engine** — Describe any manual process in plain English, AI generates a structured automation plan with triggers, actions, tools, and frequency
-- **Two-Panel Builder** — Write your vibe on the left, see the generated automation on the right in real time
-- **Test Run Simulation** — Step-by-step execution simulation with live progress tracking and terminal-style logs
-- **Save & Export** — Store up to 3 automations, export as text reports
-- **Dark Minimal UI** — Professional slate theme, fully responsive (mobile-first)
+- **Vibe-to-Workflow Engine** — Describe a manual process in plain English and get a structured plan with triggers, actions, tools, frequency, and an estimated time return
+- **Two-Panel Builder** — Write the brief on the left, review the generated plan on the right. A read-only sample plan is included for orientation
+- **Honest Simulation** — Step-by-step plan checking with a clear notice that no external tools are connected or executed
+- **Save & Export** — Store up to 3 plans, export any plan as Markdown
+- **Operations Ledger UI** — Warm paper and ink system, responsive desktop and mobile shell, visible keyboard focus, native dialogs
+- **Field Notes** — Eight small business processes that can prefill a new brief
 - **Secure by Design** — Lucia auth, server-side authorization, rate limiting, input sanitization, IDOR protection
 
 ---

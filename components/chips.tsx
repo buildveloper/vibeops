@@ -1,6 +1,9 @@
 "use client";
 
-const BUSINESS_TYPES = [
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export const BUSINESS_TYPES = [
   "Salon",
   "Plumbing",
   "Consulting",
@@ -13,7 +16,7 @@ const BUSINESS_TYPES = [
   "Marketing Agency",
 ];
 
-const GOALS = [
+export const GOALS = [
   "Lead Management",
   "Client Onboarding",
   "Invoicing",
@@ -24,30 +27,58 @@ const GOALS = [
   "Team Scheduling",
 ];
 
+function OptionChips({
+  options,
+  selected,
+  onChange,
+  label,
+}: {
+  options: string[];
+  selected: string;
+  onChange: (value: string) => void;
+  label: string;
+}) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1.5">
+      {options.map((option) => {
+        const active = option === selected;
+
+        return (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(active ? "" : option)}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-xs border px-2.5 py-2 text-[12px] font-medium transition-colors",
+              active
+                ? "border-ink bg-ink text-paper"
+                : "border-line bg-paper text-ink-2 hover:border-line-strong hover:bg-paper-2 hover:text-ink",
+            )}
+          >
+            {active && <Check className="h-3 w-3" aria-hidden="true" />}
+            {option}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function GoalChips({
   selected,
   onChange,
 }: {
   selected: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {GOALS.map((goal) => (
-        <button
-          key={goal}
-          type="button"
-          onClick={() => onChange(goal === selected ? "" : goal)}
-          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-            goal === selected
-              ? "border-indigo-500 bg-indigo-500/10 text-indigo-400"
-              : "border-slate-700 text-slate-400 hover:border-slate-600 hover:text-slate-300"
-          }`}
-        >
-          {goal}
-        </button>
-      ))}
-    </div>
+    <OptionChips
+      options={GOALS}
+      selected={selected}
+      onChange={onChange}
+      label="What should this automate?"
+    />
   );
 }
 
@@ -56,24 +87,14 @@ export function BusinessChips({
   onChange,
 }: {
   selected: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {BUSINESS_TYPES.map((biz) => (
-        <button
-          key={biz}
-          type="button"
-          onClick={() => onChange(biz === selected ? "" : biz)}
-          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-            biz === selected
-              ? "border-indigo-500 bg-indigo-500/10 text-indigo-400"
-              : "border-slate-700 text-slate-400 hover:border-slate-600 hover:text-slate-300"
-          }`}
-        >
-          {biz}
-        </button>
-      ))}
-    </div>
+    <OptionChips
+      options={BUSINESS_TYPES}
+      selected={selected}
+      onChange={onChange}
+      label="Business type"
+    />
   );
 }
